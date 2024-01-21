@@ -11,6 +11,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 store_sales = pd.read_csv("historical_data.csv")
+articles_store_sales = store_sales
 # print(store_sales.head(10))
 
 # Ја користиме info() функцијата за да провериме дали има null вредности во dataset-от
@@ -18,9 +19,27 @@ store_sales = pd.read_csv("historical_data.csv")
 
 # store_sales.info()
 
+# Филтрираме
+
+filter_by_column = ''
+while filter_by_column != 'A' and filter_by_column != 'C':
+    filter_by_column = input("За филтрирање по Article_ID внесете A, додека пак за по Country_Code внесете: C\n")
+    if filter_by_column != 'A' and filter_by_column != 'C':
+        print('Невалиден внес, обидетесе повтоно')
+
+if filter_by_column == "A":
+    filter_by_row = input("Внесете Article_ID:\n")
+    filter_by_row = np.int64(filter_by_row)
+    store_sales = store_sales.drop(store_sales[store_sales.Article_ID != filter_by_row].index)
+elif filter_by_column == "C":
+    filter_by_row = input("Внесете Country_Code:\n")
+    store_sales = store_sales.drop(store_sales[store_sales.Country_Code != filter_by_row].index)
+
+# articles = articles_store_sales.drop(['Date','Country_Code','Sold_Units'], axis=1)
+# articles = articles.groupby('Article_ID').sum().reset_index()
+
 # Ги отфрламе колоните Article_ID и Country_Code
 
-store_sales = store_sales.drop(store_sales[store_sales.Article_ID != 3417].index)
 store_sales = store_sales.drop(['Country_Code','Article_ID'], axis=1)
 # store_sales.info()
 
