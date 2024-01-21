@@ -150,7 +150,7 @@ y_test = y_test.ravel()
 sales_dates = monthly_sales['Date'][-prediction_months:].reset_index(drop=True) # Само последните 12 месеци.
 predict_df = pd.DataFrame(sales_dates)
 
-act_sales = monthly_sales['Sold_Units'][-prediction_months:].to_list() # Само последните 13 месеци.
+act_sales = monthly_sales['Sold_Units'][-(prediction_months):].to_list() # Само последните 13 месеци.
 ## print(act_sales)
 
 # За да се креира моделот на линеарна регресија и предиктираниот output
