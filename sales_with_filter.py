@@ -25,7 +25,7 @@ filter_by_column = ''
 while filter_by_column != 'A' and filter_by_column != 'C':
     filter_by_column = input("За филтрирање по Article_ID внесете A, додека пак за по Country_Code внесете: C\n")
     if filter_by_column != 'A' and filter_by_column != 'C':
-        print('Невалиден внес, обидетесе повтоно')
+        print('Невалиден внес, обидетесе повторно')
 
 if filter_by_column == "A":
     filter_by_row = input("Внесете Article_ID:\n")
@@ -37,6 +37,14 @@ elif filter_by_column == "C":
 
 ### vo zlucaj da treba da se validira: articles = articles_store_sales.drop(['Date','Country_Code','Sold_Units'], axis=1)
 ### articles = articles.groupby('Article_ID').sum().reset_index()
+
+prediction_months = 0
+while int(prediction_months) == False: # Проверка дали е int внесениот број.
+    prediction_months = input("Внесете број на месеци кој ќе се предвидуваат\n")
+    if (int(prediction_months) == False):
+        print('Невалиден внес, обидетесе повторно')
+
+prediction_months = int(prediction_months)
 
 # Ги отфрламе колоните Article_ID и Country_Code
 
@@ -113,8 +121,8 @@ supervised_data = supervised_data.dropna().reset_index(drop=True) ### replaces t
 print('supervised_data.head(1000)')
 print(supervised_data.head(1000))
 print('supervised_data.head(1000)')
-train_data = supervised_data[:-8] ### This is for the previous 12 months (сите освем последните 12)
-test_data = supervised_data[-8:] ### This is for the comming 12 months (само последните 12)
+train_data = supervised_data[:-prediction_months] ### This is for the previous 12 months (сите освем последните 12)
+test_data = supervised_data[-prediction_months:] ### This is for the comming 12 months (само последните 12)
 ## print("Train data shape", train_data.shape) ### The shape of an array is the number of elements in each dimension.
 ### print(train_data.head(100)) ### Ги содржи сите редови од supervised_data - индекс 0 до 34 (вкупно 36, сите без последните 12)
 ## print("Test data shape", test_data.shape)
@@ -139,10 +147,10 @@ y_test = y_test.ravel()
 
 # Make prediction data frame to merge the predicted sales prices of all trainer algoritams
 
-sales_dates = monthly_sales['Date'][-8:].reset_index(drop=True) # Само последните 12 месеци.
+sales_dates = monthly_sales['Date'][-prediction_months:].reset_index(drop=True) # Само последните 12 месеци.
 predict_df = pd.DataFrame(sales_dates)
 
-act_sales = monthly_sales['Sold_Units'][-9:].to_list() # Само последните 13 месеци.
+act_sales = monthly_sales['Sold_Units'][-prediction_months:].to_list() # Само последните 13 месеци.
 ## print(act_sales)
 
 # За да се креира моделот на линеарна регресија и предиктираниот output
@@ -166,9 +174,9 @@ lr_pre_series = pd.Series(result_list, name="Linear Prediction")
 predict_df = predict_df.merge(lr_pre_series, left_index=True, right_index=True)
 
 # print(predict_df)
-lr_mse = np.sqrt(mean_squared_error(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-8:])) ### sqrt = square root.
-lr_mae = mean_absolute_error(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-8:]) # -12: - Само последните 12 месеци.
-lr_r2 = r2_score(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-8:])
+lr_mse = np.sqrt(mean_squared_error(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-prediction_months:])) ### sqrt = square root.
+lr_mae = mean_absolute_error(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-prediction_months:]) # -12: - Само последните 12 месеци.
+lr_r2 = r2_score(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-prediction_months:])
 print("Liner Regression MSE: ", lr_mse)
 print("Liner Regression MAE: ", lr_mae)
 print("Liner Regression R2: ", lr_r2)
@@ -176,9 +184,9 @@ print("Liner Regression R2: ", lr_r2)
 # Визуелизација на предикцијата спрема вистинската продажба
 
 plt.figure(figsize=(15,5))
-# Actual sales
+# Вистински продажби
 plt.plot(monthly_sales['Date'], monthly_sales['Sold_Units'])
-# Predicted sales
+# Предвидени продажби
 plt.plot(predict_df['Date'], predict_df['Linear Prediction'])
 plt.title("Customer sales forecast using LR model")
 plt.xlabel("Date")

@@ -156,9 +156,9 @@ print("Liner Regression R2: ", lr_r2)
 # Визуелизација на предикцијата спрема вистинската продажба
 
 plt.figure(figsize=(15,5))
-# Actual sales
+# Вистински продажби
 plt.plot(monthly_sales['Date'], monthly_sales['Sold_Units'])
-# Predicted sales
+# Предвидени продажби
 plt.plot(predict_df['Date'], predict_df['Linear Prediction'])
 plt.title("Customer sales forecast using LR model")
 plt.xlabel("Date")
