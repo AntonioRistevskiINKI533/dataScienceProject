@@ -35,8 +35,8 @@ elif filter_by_column == "C":
     filter_by_row = input("Внесете Country_Code:\n")
     store_sales = store_sales.drop(store_sales[store_sales.Country_Code != filter_by_row].index)
 
-# articles = articles_store_sales.drop(['Date','Country_Code','Sold_Units'], axis=1)
-# articles = articles.groupby('Article_ID').sum().reset_index()
+### vo zlucaj da treba da se validira: articles = articles_store_sales.drop(['Date','Country_Code','Sold_Units'], axis=1)
+### articles = articles.groupby('Article_ID').sum().reset_index()
 
 # Ги отфрламе колоните Article_ID и Country_Code
 
