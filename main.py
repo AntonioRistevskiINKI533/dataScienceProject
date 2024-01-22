@@ -10,6 +10,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
+# https://www.kaggle.com/datasets/jyotiprasadpal/historical-sales-data-on-daily-basis-of-a-company
 store_sales = pd.read_csv("historical_data.csv")
 # print(store_sales.head(10))
 
@@ -100,10 +101,20 @@ test_data = supervised_data[-8:] ### This is for the comming 12 months (само
 ## print("Test data shape", test_data.shape)
 ### print(test_data.head(100)) ### Ги содржи сите редови од supervised_data - индекс 35 до 46 (вкупно 12)
 
+print('train_data.head(1000)')
+print(train_data.head(1000)) # ima pet redovi
+print(test_data.head(1000)) # ima 8 redovi
+print('train_data.head(1000)')
+
 scaler = MinMaxScaler(feature_range=(-1,1))
 scaler.fit(train_data)
 train_data = scaler.transform(train_data)
 test_data = scaler.transform(test_data)
+
+print('train_data.head(1000) scaler')
+print(train_data)
+print(test_data)
+print('train_data.head(1000) scaler')
 
 X_train, y_train = train_data[:,1:], train_data[:,0:1] ### In the supervised dataframe the first column allways coresponds to the output and the remaining columns act as the input features
 X_test, y_test = test_data[:,1:], test_data[:,0:1]
@@ -121,6 +132,16 @@ y_test = y_test.ravel()
 
 sales_dates = monthly_sales['Date'][-8:].reset_index(drop=True) # Само последните 12 месеци.
 predict_df = pd.DataFrame(sales_dates)
+
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+
+for i in range(0,predict_df.shape[0]):
+    predict_df['Date'][i] = predict_df['Date'][i] + relativedelta(months=predict_df.shape[0])
+
+print('predict_df.head(1000)')
+print(predict_df.head(1000))
+print('predict_df.head(1000)')
 
 act_sales = monthly_sales['Sold_Units'][-9:].to_list() # Само последните 13 месеци.
 ## print(act_sales)

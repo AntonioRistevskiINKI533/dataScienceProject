@@ -46,6 +46,12 @@ while int(prediction_months) == False: # Проверка дали е int вне
 
 prediction_months = int(prediction_months)
 
+predict_in_future = ''
+while predict_in_future != 'F' and predict_in_future != 'P':
+    predict_in_future = input("За филтрирање во иднина внесете F, инаку внесете: P\n")
+    if predict_in_future != 'F' and predict_in_future != 'P':
+        print('Невалиден внес, обидетесе повторно')
+
 # Ги отфрламе колоните Article_ID и Country_Code
 
 store_sales = store_sales.drop(['Country_Code','Article_ID'], axis=1)
@@ -121,7 +127,12 @@ supervised_data = supervised_data.dropna().reset_index(drop=True) ### replaces t
 print('supervised_data.head(1000)')
 print(supervised_data.head(1000))
 print('supervised_data.head(1000)')
-train_data = supervised_data[:-prediction_months] ### This is for the previous 12 months (сите освем последните 12)
+
+if (predict_in_future == 'F'):
+    train_data = supervised_data ### This is for the previous 12 months (сите освем последните 12)
+elif (predict_in_future == 'P'):
+    train_data = supervised_data[:-prediction_months]
+
 test_data = supervised_data[-prediction_months:] ### This is for the comming 12 months (само последните 12)
 ## print("Train data shape", train_data.shape) ### The shape of an array is the number of elements in each dimension.
 ### print(train_data.head(100)) ### Ги содржи сите редови од supervised_data - индекс 0 до 34 (вкупно 36, сите без последните 12)
@@ -149,6 +160,12 @@ y_test = y_test.ravel()
 
 sales_dates = monthly_sales['Date'][-prediction_months:].reset_index(drop=True) # Само последните 12 месеци.
 predict_df = pd.DataFrame(sales_dates)
+
+from dateutil.relativedelta import relativedelta
+
+if (predict_in_future == 'F'):
+    for i in range(0, predict_df.shape[0]):
+        predict_df['Date'][i] = predict_df['Date'][i] + relativedelta(months=predict_df.shape[0])
 
 act_sales = monthly_sales['Sold_Units'][-(prediction_months):].to_list() # Само последните 13 месеци.
 ## print(act_sales)
