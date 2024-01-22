@@ -31,9 +31,6 @@ elif filter_by_column == "C":
     filter_by_row = input("Внесете Country_Code:\n")
     store_sales = store_sales.drop(store_sales[store_sales.Country_Code != filter_by_row].index)
 
-### vo zlucaj da treba da se validira: articles = articles_store_sales.drop(['Date','Country_Code','Sold_Units'], axis=1)
-### articles = articles.groupby('Article_ID').sum().reset_index()
-
 prediction_months = 0
 while int(prediction_months) == False: # Проверка дали е int внесениот број.
     prediction_months = input("Внесете број на месеци кој ќе се предвидуваат\n")
@@ -53,12 +50,12 @@ while predict_in_future != 'F' and predict_in_future != 'P':
 store_sales = store_sales.drop(['Country_Code','Article_ID'], axis=1)
 # store_sales.info()
 
-# конвертираме колоната Date од тим integer во тип datetime
+# Ја конвертираме колоната Date од тим integer во тип datetime
 
 store_sales['Date'] = pd.to_datetime(store_sales['Date'], format='%Y%m%d')
 # store_sales.info()
 
-# Конвертираме Date во месечен период, и потоа ги сумираме бројот на продадени единици за секој месец
+# Ја конвертираме Date во месечен период, и потоа ги сумираме бројот на продадени единици за секој месец
 
 store_sales['Date'] = store_sales['Date'].dt.to_period("M")
 # print(store_sales.head(10))

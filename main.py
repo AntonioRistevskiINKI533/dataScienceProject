@@ -25,7 +25,7 @@ store_sales = pd.read_csv("historical_data.csv")
 # print(store_sales.head(10))
 
 # Ја користиме info() функцијата за да провериме дали има null вредности во dataset-от
-# Во count важно е да пишува non-null, ако така пишува тогаш е вод ред.
+# Во count важно е да пишува non-null, ако така пишува тогаш е во ред.
 
 # store_sales.info()
 
@@ -34,12 +34,12 @@ store_sales = pd.read_csv("historical_data.csv")
 store_sales = store_sales.drop(['Country_Code','Article_ID'], axis=1)
 # store_sales.info()
 
-# конвертираме колоната Date од тим integer во тип datetime
+# Ја конвертираме колоната Date од тим integer во тип datetime
 
 store_sales['Date'] = pd.to_datetime(store_sales['Date'], format='%Y%m%d')
 # store_sales.info()
 
-# Конвертираме Date во месечен период, и потоа ги сумираме бројот на продадени единици за секој месец
+# Ја конвертираме Date во месечен период, и потоа ги сумираме бројот на продадени единици за секој месец
 
 store_sales['Date'] = store_sales['Date'].dt.to_period("M")
 # print(store_sales.head(10))
