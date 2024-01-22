@@ -88,9 +88,7 @@ z = pd.DataFrame(monthly_sales)
 z.plot()
 plt.show()
 
-print('monthly_sales.head(1000)')
-print(monthly_sales.head(1000))
-print('monthly_sales.head(1000)')
+
 supervised_data = monthly_sales.drop(['Date', 'Sold_Units'], axis=1)
 ### print(supervised_data.head(10))
 
@@ -106,10 +104,6 @@ supervised_data = supervised_data.dropna().reset_index(drop=True) ### replaces t
 
 # Делење на податоците во train и test
 
-print('supervised_data.head(1000)')
-print(supervised_data.head(1000)) # Na main 12 na per_stores 6, Najveroatno sto 1132 artikl pocnuva od avgust 2017 a drugiot po nego od fevruari 2017 da se prodava
-print('supervised_data.head(1000)') # slednite 5 proizvodi pocnuvaaat vo januari a a posle ima eden od juni 2017
-
 if (predict_in_future == 'F'):
     train_data = supervised_data ### This is for the previous 12 months (сите освем последните 12)
 elif (predict_in_future == 'P'):
@@ -122,20 +116,10 @@ test_data = supervised_data[-prediction_months:] ### This is for the comming 12 
 ## print("Test data shape", test_data.shape)
 ### print(test_data.head(100)) ### Ги содржи сите редови од supervised_data - индекс 35 до 46 (вкупно 12)
 
-print('train_data.head(1000)')
-print(train_data.head(1000)) # ima pet redovi
-print(test_data.head(1000)) # ima 8 redovi
-print('train_data.head(1000)')
-
 scaler = MinMaxScaler(feature_range=(-1,1))
 scaler.fit(train_data)
 train_data = scaler.transform(train_data)
 test_data = scaler.transform(test_data)
-
-print('train_data.head(1000) scaler')
-print(train_data)
-print(test_data)
-print('train_data.head(1000) scaler')
 
 X_train, y_train = train_data[:,1:], train_data[:,0:1] ### In the supervised dataframe the first column allways coresponds to the output and the remaining columns act as the input features
 X_test, y_test = test_data[:,1:], test_data[:,0:1]

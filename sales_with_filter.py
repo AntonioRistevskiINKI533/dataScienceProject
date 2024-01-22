@@ -107,9 +107,6 @@ z = pd.DataFrame(monthly_sales)
 z.plot()
 plt.show()
 
-print('monthly_sales.head(1000)')
-print(monthly_sales.head(1000))
-print('monthly_sales.head(1000)')
 supervised_data = monthly_sales.drop(['Date', 'Sold_Units'], axis=1)
 ### print(supervised_data.head(10))
 
@@ -124,10 +121,6 @@ supervised_data = supervised_data.dropna().reset_index(drop=True) ### replaces t
 ## print(supervised_data.head()) ############NEVADI KO SO SE KAJNEGO, POINAKU SE SVRTENI NEKAKO
 
 # Делење на податоците во train и test
-
-print('supervised_data.head(1000)')
-print(supervised_data.head(1000))
-print('supervised_data.head(1000)')
 
 if (predict_in_future == 'F'):
     train_data = supervised_data ### This is for the previous 12 months (сите освем последните 12)
