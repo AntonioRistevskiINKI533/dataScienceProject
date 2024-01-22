@@ -139,10 +139,6 @@ if (predict_in_future == 'F'):
     for i in range(0, predict_df.shape[0]):
         predict_df['Date'][i] = predict_df['Date'][i] + relativedelta(months=predict_df.shape[0])
 
-print('predict_df.head(1000)')
-print(predict_df.head(1000))
-print('predict_df.head(1000)')
-
 act_sales = monthly_sales['Sold_Units'][-prediction_months:].to_list() # Само последните 13 месеци.
 ## print(act_sales)
 
@@ -179,6 +175,17 @@ print("Liner Regression R2: ", lr_r2)
 plt.figure(figsize=(15,5))
 # Вистински продажби
 plt.plot(monthly_sales['Date'], monthly_sales['Sold_Units'])
+
+# Додавање нова на почетокот за да се спојат Вистинската продажба и предвидената
+
+Date = (predict_df['Date'][0] - relativedelta(months=1))
+Sold_Units = monthly_sales.loc[monthly_sales['Date'] == Date].iloc[0]['Sold_Units']
+
+starting_point_row = pd.DataFrame(columns=('Date', 'Linear Prediction'))
+starting_point_row.loc[len(starting_point_row.index)] = [Date, Sold_Units]
+
+predict_df = pd.concat([starting_point_row, predict_df.loc[:]]).reset_index(drop=True)
+
 # Предвидени продажби
 plt.plot(predict_df['Date'], predict_df['Linear Prediction'])
 plt.title("Customer sales forecast using LR model")
