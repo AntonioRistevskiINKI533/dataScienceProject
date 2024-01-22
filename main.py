@@ -9,6 +9,21 @@ from sktime.utils.plotting import plot_series
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from dateutil.relativedelta import relativedelta
+
+prediction_months = 0
+while int(prediction_months) == False: # Проверка дали е int внесениот број.
+    prediction_months = input("Внесете број на месеци кој ќе се предвидуваат\n")
+    if (int(prediction_months) == False):
+        print('Невалиден внес, обидетесе повторно')
+
+prediction_months = int(prediction_months)
+
+predict_in_future = ''
+while predict_in_future != 'F' and predict_in_future != 'P':
+    predict_in_future = input("За филтрирање во иднина внесете F, инаку внесете: P\n")
+    if predict_in_future != 'F' and predict_in_future != 'P':
+        print('Невалиден внес, обидетесе повторно')
 
 # https://www.kaggle.com/datasets/jyotiprasadpal/historical-sales-data-on-daily-basis-of-a-company
 store_sales = pd.read_csv("historical_data.csv")
@@ -94,8 +109,14 @@ supervised_data = supervised_data.dropna().reset_index(drop=True) ### replaces t
 print('supervised_data.head(1000)')
 print(supervised_data.head(1000)) # Na main 12 na per_stores 6, Najveroatno sto 1132 artikl pocnuva od avgust 2017 a drugiot po nego od fevruari 2017 da se prodava
 print('supervised_data.head(1000)') # slednite 5 proizvodi pocnuvaaat vo januari a a posle ima eden od juni 2017
-train_data = supervised_data[:-8] ### This is for the previous 12 months (сите освем последните 12)
-test_data = supervised_data[-8:] ### This is for the comming 12 months (само последните 12)
+
+if (predict_in_future == 'F'):
+    train_data = supervised_data ### This is for the previous 12 months (сите освем последните 12)
+elif (predict_in_future == 'P'):
+    train_data = supervised_data[:-prediction_months]
+
+train_data = supervised_data[:-prediction_months] ### This is for the previous 12 months (сите освем последните 12)
+test_data = supervised_data[-prediction_months:] ### This is for the comming 12 months (само последните 12)
 ## print("Train data shape", train_data.shape) ### The shape of an array is the number of elements in each dimension.
 ### print(train_data.head(100)) ### Ги содржи сите редови од supervised_data - индекс 0 до 34 (вкупно 36, сите без последните 12)
 ## print("Test data shape", test_data.shape)
@@ -130,20 +151,20 @@ y_test = y_test.ravel()
 
 # Make prediction data frame to merge the predicted sales prices of all trainer algoritams
 
-sales_dates = monthly_sales['Date'][-8:].reset_index(drop=True) # Само последните 12 месеци.
+sales_dates = monthly_sales['Date'][-prediction_months:].reset_index(drop=True) # Само последните 12 месеци.
 predict_df = pd.DataFrame(sales_dates)
 
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
+# За предикција во иднина
 
-for i in range(0,predict_df.shape[0]):
-    predict_df['Date'][i] = predict_df['Date'][i] + relativedelta(months=predict_df.shape[0])
+if (predict_in_future == 'F'):
+    for i in range(0, predict_df.shape[0]):
+        predict_df['Date'][i] = predict_df['Date'][i] + relativedelta(months=predict_df.shape[0])
 
 print('predict_df.head(1000)')
 print(predict_df.head(1000))
 print('predict_df.head(1000)')
 
-act_sales = monthly_sales['Sold_Units'][-9:].to_list() # Само последните 13 месеци.
+act_sales = monthly_sales['Sold_Units'][-prediction_months:].to_list() # Само последните 13 месеци.
 ## print(act_sales)
 
 # За да се креира моделот на линеарна регресија и предиктираниот output
@@ -167,9 +188,9 @@ lr_pre_series = pd.Series(result_list, name="Linear Prediction")
 predict_df = predict_df.merge(lr_pre_series, left_index=True, right_index=True)
 
 # print(predict_df)
-lr_mse = np.sqrt(mean_squared_error(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-8:])) ### sqrt = square root.
-lr_mae = mean_absolute_error(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-8:]) # -12: - Само последните 12 месеци.
-lr_r2 = r2_score(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-8:])
+lr_mse = np.sqrt(mean_squared_error(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-prediction_months:])) ### sqrt = square root.
+lr_mae = mean_absolute_error(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-prediction_months:]) # -12: - Само последните 12 месеци.
+lr_r2 = r2_score(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-prediction_months:])
 print("Liner Regression MSE: ", lr_mse)
 print("Liner Regression MAE: ", lr_mae)
 print("Liner Regression R2: ", lr_r2)

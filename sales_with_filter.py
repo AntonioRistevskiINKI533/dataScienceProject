@@ -9,6 +9,7 @@ from sktime.utils.plotting import plot_series
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from dateutil.relativedelta import relativedelta
 
 store_sales = pd.read_csv("historical_data.csv")
 articles_store_sales = store_sales
@@ -161,7 +162,7 @@ y_test = y_test.ravel()
 sales_dates = monthly_sales['Date'][-prediction_months:].reset_index(drop=True) # Само последните 12 месеци.
 predict_df = pd.DataFrame(sales_dates)
 
-from dateutil.relativedelta import relativedelta
+# За предикција во иднина
 
 if (predict_in_future == 'F'):
     for i in range(0, predict_df.shape[0]):
