@@ -1,14 +1,10 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sktime.forecasting.base import ForecastingHorizon
-from sktime.forecasting.model_selection import temporal_train_test_split
-from sktime.forecasting.theta import ThetaForecaster
-from sktime.performance_metrics.forecasting import mean_absolute_percentage_error
-from sktime.utils.plotting import plot_series
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from dateutil.relativedelta import relativedelta
 
 prediction_months = 0
 while int(prediction_months) == False: # Проверка дали е int внесениот број.
@@ -17,6 +13,12 @@ while int(prediction_months) == False: # Проверка дали е int вне
         print('Невалиден внес, обидетесе повторно')
 
 prediction_months = int(prediction_months)
+
+predict_in_future = ''
+while predict_in_future != 'F' and predict_in_future != 'P':
+    predict_in_future = input("За предикција во иднина внесете F, инаку внесете: P\n")
+    if predict_in_future != 'F' and predict_in_future != 'P':
+        print('Невалиден внес, обидетесе повторно')
 
 countries_store_sales = pd.read_csv("historical_data.csv")
 
@@ -60,7 +62,11 @@ for ind in countries.index:
     supervised_data[col_name] = supervised_data['Sales_Diff'].shift(i)
   supervised_data = supervised_data.dropna().reset_index(drop=True)
 
-  train_data = supervised_data[:-prediction_months] ### This is for the previous 12 months (сите освем последните 12)
+  if (predict_in_future == 'F'):
+    train_data = supervised_data  ### This is for the previous 12 months (сите освем последните 12)
+  elif (predict_in_future == 'P'):
+    train_data = supervised_data[:-prediction_months] ### This is for the previous 12 months (сите освем последните 12)
+
   test_data = supervised_data[-prediction_months:] ### This is for the comming 12 months (само последните 12)
 
   scaler = MinMaxScaler(feature_range=(-1, 1))
@@ -75,6 +81,10 @@ for ind in countries.index:
 
   sales_dates = monthly_sales['Date'][-prediction_months:].reset_index(drop=True)  # Само последните 12 месеци.
   predict_df = pd.DataFrame(sales_dates)
+
+  if (predict_in_future == 'F'):
+    for i in range(0, predict_df.shape[0]):
+      predict_df['Date'][i] = predict_df['Date'][i] + relativedelta(months=predict_df.shape[0])
 
   act_sales = monthly_sales['Sold_Units'][-(prediction_months):].to_list()  # Само последните 13 месеци.
 

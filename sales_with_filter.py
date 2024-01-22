@@ -1,11 +1,6 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sktime.forecasting.base import ForecastingHorizon
-from sktime.forecasting.model_selection import temporal_train_test_split
-from sktime.forecasting.theta import ThetaForecaster
-from sktime.performance_metrics.forecasting import mean_absolute_percentage_error
-from sktime.utils.plotting import plot_series
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
@@ -49,7 +44,7 @@ prediction_months = int(prediction_months)
 
 predict_in_future = ''
 while predict_in_future != 'F' and predict_in_future != 'P':
-    predict_in_future = input("За филтрирање во иднина внесете F, инаку внесете: P\n")
+    predict_in_future = input("За предикција во иднина внесете F, инаку внесете: P\n")
     if predict_in_future != 'F' and predict_in_future != 'P':
         print('Невалиден внес, обидетесе повторно')
 
