@@ -103,14 +103,13 @@ for ind in countries.index:
   lr_pre_series = pd.Series(result_list, name="Linear Prediction")
   predict_df = predict_df.merge(lr_pre_series, left_index=True, right_index=True)
 
-  lr_mse = np.sqrt(
-    mean_squared_error(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-prediction_months:]))
-  lr_mae = mean_absolute_error(predict_df['Linear Prediction'],
-                               monthly_sales['Sold_Units'][-prediction_months:])
-  lr_r2 = r2_score(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-prediction_months:])
-  print("Liner Regression MSE: ", lr_mse)
-  print("Liner Regression MAE: ", lr_mae)
-  print("Liner Regression R2: ", lr_r2)
+  if (predict_in_future == 'P'):
+    lr_mse = np.sqrt(mean_squared_error(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-prediction_months:]))
+    lr_mae = mean_absolute_error(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-prediction_months:])
+    lr_r2 = r2_score(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-prediction_months:])
+    print("MSE (Mean squared error): ", lr_mse)
+    print("MAE (Mean absolute error): ", lr_mae)
+    print("R2 (R square): ", lr_r2)
 
   # plt.figure(figsize=(15, 5))
   # Вистински продажби
@@ -137,8 +136,8 @@ for ind in countries.index:
   # plt.legend(['Actual Sales', 'Predicted sales'])
   # plt.show()
 
-plt.title("Customer sales forecast using LR model")
+plt.title("Предвидување на продажби со модел на линеарна регресија")
 plt.xlabel('Date')
 plt.ylabel('Sold_Units')
-plt.legend(['Actual Sales', 'Predicted sales'])
+plt.legend(['Реални продажби', 'Претпоставени продажби'])
 plt.show()

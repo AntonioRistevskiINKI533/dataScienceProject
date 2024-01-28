@@ -15,7 +15,6 @@ colors = ['red', 'green', 'blue', 'yellow', 'magenta', 'cyan', 'brown', 'pink', 
 plt.figure(figsize=(15, 10))
 
 for ind in articles.index:
-  print(articles['Article_ID'][ind])
   # store_sales.info()
 
   store_sales = pd.read_csv("historical_data.csv")
@@ -32,11 +31,11 @@ for ind in articles.index:
 
   label_string = "Article_ID "+str(articles['Article_ID'][ind])
   line, = plt.plot(monthly_sales['Date'], monthly_sales['Sold_Units'], 'r-o', label=label_string) # 'g--'
-  print(colors[ind])
+
   line.set_color(colors[ind])
 
+plt.title('Месечни продажби по производ')
 plt.xlabel('Date')
 plt.ylabel('Sold_Units')
-plt.title('Monthly sales per article')
 plt.legend()
 plt.show()

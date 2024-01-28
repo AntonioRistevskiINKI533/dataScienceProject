@@ -59,7 +59,7 @@ plt.figure(figsize=(15,5))
 plt.plot(monthly_sales['Date'], monthly_sales['Sold_Units'])
 plt.xlabel('Date')
 plt.ylabel('Sold_Units')
-plt.title('Monthly customer sales')
+plt.title('Месечна продажба')
 plt.show()
 
 y = pd.DataFrame(monthly_sales)
@@ -76,7 +76,7 @@ plt.figure(figsize=(15,5))
 plt.bar(monthly_sales['Date'], monthly_sales['Sales_Diff'], width=12) ### width е ширина на столбовите.
 plt.xlabel("Date")
 plt.ylabel("Sold_Units")
-plt.title("Monthly customer sales difference")
+plt.title("Месечна разлика во продажби")
 plt.show()
 
 z = pd.DataFrame(monthly_sales)
@@ -104,7 +104,6 @@ if (predict_in_future == 'F'):
 elif (predict_in_future == 'P'):
     train_data = supervised_data[:-prediction_months]
 
-train_data = supervised_data[:-prediction_months] ### This is for the previous 12 months (сите освем последните 12)
 test_data = supervised_data[-prediction_months:] ### This is for the comming 12 months (само последните 12)
 ## print("Train data shape", train_data.shape) ### The shape of an array is the number of elements in each dimension.
 ### print(train_data.head(100)) ### Ги содржи сите редови од supervised_data - индекс 0 до 34 (вкупно 36, сите без последните 12)
@@ -163,12 +162,13 @@ lr_pre_series = pd.Series(result_list, name="Linear Prediction")
 predict_df = predict_df.merge(lr_pre_series, left_index=True, right_index=True)
 
 # print(predict_df)
-lr_mse = np.sqrt(mean_squared_error(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-prediction_months:])) ### sqrt = square root.
-lr_mae = mean_absolute_error(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-prediction_months:]) # -12: - Само последните 12 месеци.
-lr_r2 = r2_score(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-prediction_months:])
-print("Liner Regression MSE: ", lr_mse)
-print("Liner Regression MAE: ", lr_mae)
-print("Liner Regression R2: ", lr_r2)
+if (predict_in_future == 'P'):
+    lr_mse = np.sqrt(mean_squared_error(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-prediction_months:])) ### sqrt = square root.
+    lr_mae = mean_absolute_error(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-prediction_months:]) # -12: - Само последните 12 месеци.
+    lr_r2 = r2_score(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-prediction_months:])
+    print("MSE (Mean squared error): ", lr_mse)
+    print("MAE (Mean absolute error): ", lr_mae)
+    print("R2 (R square): ", lr_r2)
 
 # Визуелизација на предикцијата спрема вистинската продажба
 
@@ -188,8 +188,8 @@ predict_df = pd.concat([starting_point_row, predict_df.loc[:]]).reset_index(drop
 
 # Предвидени продажби
 plt.plot(predict_df['Date'], predict_df['Linear Prediction'])
-plt.title("Customer sales forecast using LR model")
+plt.title("Предвидување на продажби со модел на линеарна регресија")
 plt.xlabel("Date")
 plt.ylabel("Sold_Units")
-plt.legend(['Actual Sales', 'Predicted sales'])
+plt.legend(['Реални продажби', 'Претпоставени продажби'])
 plt.show()
