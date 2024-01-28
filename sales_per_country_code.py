@@ -30,7 +30,6 @@ colors = ['red', 'green', 'blue', 'yellow', 'magenta', 'cyan', 'brown', 'pink', 
 plt.figure(figsize=(15, 10))
 
 for ind in countries.index:
-  print(countries['Country_Code'][ind])
   # store_sales.info()
 
   store_sales = pd.read_csv("historical_data.csv")
@@ -47,7 +46,6 @@ for ind in countries.index:
 
   label_string = "Country_Code "+str(countries['Country_Code'][ind])
   line, = plt.plot(monthly_sales['Date'], monthly_sales['Sold_Units'], 'r-o', label=label_string) # 'g--'
-  print(colors[ind])
   line.set_color(colors[ind])
 
   # PREDICTION
@@ -107,6 +105,7 @@ for ind in countries.index:
     lr_mse = np.sqrt(mean_squared_error(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-prediction_months:]))
     lr_mae = mean_absolute_error(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-prediction_months:])
     lr_r2 = r2_score(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-prediction_months:])
+    print("Country_Code " + str(countries['Country_Code'][ind]))
     print("MSE (Mean squared error): ", lr_mse)
     print("MAE (Mean absolute error): ", lr_mae)
     print("R2 (R square): ", lr_r2)
@@ -126,9 +125,8 @@ for ind in countries.index:
   predict_df = pd.concat([starting_point_row, predict_df.loc[:]]).reset_index(drop=True)
 
   # Предвидени продажби
-  label_string = "Country_Code " + str(countries['Country_Code'][ind] + "(Prediction)")
+  label_string = "Country_Code " + str(countries['Country_Code'][ind] + " (предвидена продажба)")
   line, = plt.plot(predict_df['Date'], predict_df['Linear Prediction'], 'g--', label=label_string)  # 'g--'
-  print(colors[ind])
   line.set_color(colors[ind])
   # plt.title("Customer sales forecast using LR model")
   # plt.xlabel("Date")
@@ -139,5 +137,5 @@ for ind in countries.index:
 plt.title("Предвидување на продажби со модел на линеарна регресија")
 plt.xlabel('Date')
 plt.ylabel('Sold_Units')
-plt.legend(['Реални продажби', 'Претпоставени продажби'])
+plt.legend()
 plt.show()
