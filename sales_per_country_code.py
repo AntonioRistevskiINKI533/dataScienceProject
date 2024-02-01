@@ -6,6 +6,21 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from dateutil.relativedelta import relativedelta
 
+input_for_column = ''
+while input_for_column != 'A' and input_for_column != 'C':
+    input_for_column = input("За предвидување за сите производи (Article_ID) внесете A, додека пак за држави (Country_Code) внесете: C\n")
+    if input_for_column != 'A' and input_for_column != 'C':
+        print('Невалиден внес, обидетесе повторно')
+
+column = ''
+other_column = ''
+if (input_for_column == 'A'):
+  column = 'Article_ID'
+  other_column = 'Country_Code'
+elif (input_for_column == 'C'):
+  column = 'Country_Code'
+  other_column = 'Article_ID'
+
 prediction_months = 0
 while int(prediction_months) == False: # Проверка дали е int внесениот број.
     prediction_months = input("Внесете број на месеци кој ќе се предвидуваат\n")
@@ -20,21 +35,25 @@ while predict_in_future != 'F' and predict_in_future != 'P':
     if predict_in_future != 'F' and predict_in_future != 'P':
         print('Невалиден внес, обидетесе повторно')
 
-countries_store_sales = pd.read_csv("historical_data.csv")
+elements_store_sales = pd.read_csv("historical_data.csv")
 
-countries = countries_store_sales.drop(['Date','Article_ID','Sold_Units'], axis=1)
-countries = countries.groupby('Country_Code').sum().reset_index()
+elements = elements_store_sales.drop(['Date',other_column,'Sold_Units'], axis=1)
+elements = elements.groupby(column).sum().reset_index()
 
 colors = ['red', 'green', 'blue', 'yellow', 'magenta', 'cyan', 'brown', 'pink', 'teal', 'orange', 'black', 'purple', 'olive', 'gray', 'violet']
 
 plt.figure(figsize=(15, 10))
 
-for ind in countries.index:
+for ind in elements.index:
   # store_sales.info()
 
   store_sales = pd.read_csv("historical_data.csv")
 
-  store_sales = store_sales.drop(store_sales[store_sales.Country_Code != countries['Country_Code'][ind]].index)
+  if (input_for_column == 'C'):
+    store_sales = store_sales.drop(store_sales[store_sales.Country_Code != elements['Country_Code'][ind]].index)
+  elif (input_for_column == 'A'):
+    store_sales = store_sales.drop(store_sales[store_sales.Article_ID != elements['Article_ID'][ind]].index)
+
   store_sales = store_sales.drop(['Country_Code','Article_ID'], axis=1)
 
   store_sales['Date'] = pd.to_datetime(store_sales['Date'], format='%Y%m%d')
@@ -44,7 +63,7 @@ for ind in countries.index:
 
   monthly_sales['Date'] = monthly_sales['Date'].dt.to_timestamp()
 
-  label_string = "Country_Code "+str(countries['Country_Code'][ind])
+  label_string = column+" "+str(elements[column][ind])
   line, = plt.plot(monthly_sales['Date'], monthly_sales['Sold_Units'], 'r-o', label=label_string) # 'g--'
   line.set_color(colors[ind])
 
@@ -55,7 +74,7 @@ for ind in countries.index:
 
   supervised_data = monthly_sales.drop(['Date', 'Sold_Units'], axis=1)
 
-  for i in range(1, 13):
+  for i in range(1, (prediction_months+1)):
     col_name = 'month_' + str(i)
     supervised_data[col_name] = supervised_data['Sales_Diff'].shift(i)
   supervised_data = supervised_data.dropna().reset_index(drop=True)
@@ -84,7 +103,7 @@ for ind in countries.index:
     for i in range(0, predict_df.shape[0]):
       predict_df['Date'][i] = predict_df['Date'][i] + relativedelta(months=predict_df.shape[0])
 
-  act_sales = monthly_sales['Sold_Units'][-(prediction_months):].to_list()  # Само последните 13 месеци.
+  act_sales = monthly_sales['Sold_Units'][-(prediction_months+1):].to_list()  # Само последните 13 месеци.
 
   lr_model = LinearRegression()
   lr_model.fit(X_train, y_train)
@@ -96,8 +115,7 @@ for ind in countries.index:
 
   result_list = []
   for index in range(0, len(lr_pre_test_set)):
-    result_list.append(
-      lr_pre_test_set[index][0] + act_sales[index])
+    result_list.append(lr_pre_test_set[index][0] + act_sales[index])
   lr_pre_series = pd.Series(result_list, name="Linear Prediction")
   predict_df = predict_df.merge(lr_pre_series, left_index=True, right_index=True)
 
@@ -105,7 +123,6 @@ for ind in countries.index:
     lr_mse = np.sqrt(mean_squared_error(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-prediction_months:]))
     lr_mae = mean_absolute_error(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-prediction_months:])
     lr_r2 = r2_score(predict_df['Linear Prediction'], monthly_sales['Sold_Units'][-prediction_months:])
-    print("Country_Code " + str(countries['Country_Code'][ind]))
     print("MSE (Mean squared error): ", lr_mse)
     print("MAE (Mean absolute error): ", lr_mae)
     print("R2 (R square): ", lr_r2)
@@ -125,7 +142,7 @@ for ind in countries.index:
   predict_df = pd.concat([starting_point_row, predict_df.loc[:]]).reset_index(drop=True)
 
   # Предвидени продажби
-  label_string = "Country_Code " + str(countries['Country_Code'][ind] + " (предвидена продажба)")
+  label_string = label_string + " (предвидена продажба)"
   line, = plt.plot(predict_df['Date'], predict_df['Linear Prediction'], 'g--', label=label_string)  # 'g--'
   line.set_color(colors[ind])
   # plt.title("Customer sales forecast using LR model")

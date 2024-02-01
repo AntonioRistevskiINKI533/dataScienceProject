@@ -105,7 +105,7 @@ supervised_data = monthly_sales.drop(['Date', 'Sold_Units'], axis=1)
 # Подготовка на supervised data
 ### These datasets are designed to train or “supervise” algorithms into classifying data or predicting outcomes accurately. Using labeled inputs and outputs, the model can measure its accuracy and learn over time.
 
-for i in range(1,13):
+for i in range(1,prediction_months+1):
     col_name = 'month_' + str(i)
     supervised_data[col_name] = supervised_data['Sales_Diff'].shift(i) # The `DataFrame.shift()` function in Pandas is a method that shifts the values of a DataFrame along a specified axis.
 ### print(supervised_data.head(10))
@@ -153,7 +153,7 @@ if (predict_in_future == 'F'):
     for i in range(0, predict_df.shape[0]):
         predict_df['Date'][i] = predict_df['Date'][i] + relativedelta(months=predict_df.shape[0])
 
-act_sales = monthly_sales['Sold_Units'][-(prediction_months):].to_list() # Само последните 13 месеци.
+act_sales = monthly_sales['Sold_Units'][-(prediction_months+1):].to_list() # Само последните 13 месеци.
 ## print(act_sales)
 
 # За да се креира моделот на линеарна регресија и предиктираниот output
