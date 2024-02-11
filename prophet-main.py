@@ -13,6 +13,12 @@ import matplotlib.pyplot as plt
 import warnings
 warnings.simplefilter("ignore", category=FutureWarning)
 
+import logging
+logger = logging.getLogger('cmdstanpy')
+logger.addHandler(logging.NullHandler())
+logger.propagate = False
+logger.setLevel(logging.CRITICAL)
+
 # Load your data
 data = pd.read_csv('data.csv')
 
@@ -32,9 +38,9 @@ elif filter_by_column == "I":
     data = data.drop(data[data.item != filter_by_row].index)
 
 prediction_months = 0
-while int(prediction_months) == False: # Проверка дали е int внесениот број.
+while int(prediction_months) == False or int(prediction_months) < 1: # Проверка дали е позитивен int внесениот број.
     prediction_months = input("Внесете број на месеци кој ќе се предвидуваат\n")
-    if (int(prediction_months) == False):
+    if (int(prediction_months) == False or int(prediction_months) < 1):
         print('Невалиден внес, обидетесе повторно')
 
 prediction_months = int(prediction_months)
@@ -104,6 +110,7 @@ if (predict_in_future == 'P'):
     plt.show()
 
     # Plot actual vs. predicted values for the last 12 months
+    plt.figure(figsize=(10, 5))
     plt.plot(data[data['ds'] > last_date - pd.DateOffset(months=prediction_months)]['ds'], actual_values, label='Реални продажби')
     plt.plot(forecast[forecast['ds'] > last_date - pd.DateOffset(months=prediction_months)]['ds'], predicted_values, label='Предвидени продажби')
     plt.xlabel('Датум')

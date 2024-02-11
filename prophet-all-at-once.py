@@ -7,6 +7,12 @@ import matplotlib.pyplot as plt
 import warnings
 warnings.simplefilter("ignore", category=FutureWarning)
 
+import logging
+logger = logging.getLogger('cmdstanpy')
+logger.addHandler(logging.NullHandler())
+logger.propagate = False
+logger.setLevel(logging.CRITICAL)
+
 input_for_column = ''
 while input_for_column != 'S' and input_for_column != 'I':
     input_for_column = input(
@@ -17,7 +23,7 @@ while input_for_column != 'S' and input_for_column != 'I':
 column = ''
 other_column = ''
 if (input_for_column == 'S'):
-    plt.figure(figsize=(25, 10))
+    plt.figure(figsize=(20, 10))
     column = 'store'
     other_column = 'item'
 elif (input_for_column == 'I'):
@@ -26,9 +32,9 @@ elif (input_for_column == 'I'):
     other_column = 'store'
 
 prediction_months = 0
-while int(prediction_months) == False:  # Проверка дали е int внесениот број.
+while int(prediction_months) == False or int(prediction_months) < 1:  # Проверка дали е int внесениот број.
     prediction_months = input("Внесете број на месеци кој ќе се предвидуваат\n")
-    if (int(prediction_months) == False):
+    if (int(prediction_months) == False or int(prediction_months) < 1):
         print('Невалиден внес, обидетесе повторно')
 
 prediction_months = int(prediction_months)
