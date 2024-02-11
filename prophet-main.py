@@ -1,9 +1,3 @@
-# pip install fbprophet
-# pip install Cython
-# pip install pystan
-# pip install prophet --no-binary :all:
-# pip install plotly
-
 import pandas as pd
 from prophet import Prophet
 import numpy as np
@@ -53,12 +47,10 @@ while predict_in_future != 'F' and predict_in_future != 'P':
 
 
 
-data['date'] = np.array(pd.to_datetime(data['date'])) # format='%Y%m%d'
+data['date'] = np.array(pd.to_datetime(data['date']))
 data['date'] = data['date'].dt.to_period("M")
 data = data.groupby('date').sum().reset_index()
 data['date'] = data['date'].dt.to_timestamp()
-# frame = df[df['store'] == 1].copy()
-# data = data.copy()
 data.drop(['store', 'item'], axis=1, inplace=True)
 data.columns = ['ds', 'y']
 

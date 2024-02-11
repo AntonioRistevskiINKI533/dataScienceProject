@@ -45,9 +45,9 @@ while predict_in_future != 'F' and predict_in_future != 'P':
     if predict_in_future != 'F' and predict_in_future != 'P':
         print('Невалиден внес, обидетесе повторно')
 
-data = pd.read_csv("data.csv")
+dt = pd.read_csv("data.csv")
 
-elements = data.drop(['date', other_column, 'sales'], axis=1)
+elements = dt.drop(['date', other_column, 'sales'], axis=1)
 elements = elements.groupby(column).sum().reset_index()
 
 colors = ['red', 'green', 'blue', 'yellow', 'magenta', 'cyan', 'brown', 'pink', 'teal', 'orange', 'black', 'purple','olive', 'gray', 'violet',
@@ -57,12 +57,10 @@ colors = ['red', 'green', 'blue', 'yellow', 'magenta', 'cyan', 'brown', 'pink', 
 
 for ind in elements.index:
 
-    data = pd.read_csv("data.csv")
-
     if (input_for_column == 'S'):
-        data = data.drop(data[data.store != elements['store'][ind]].index)
+        data = dt.drop(dt[dt.store != elements['store'][ind]].index)
     elif (input_for_column == 'I'):
-        data = data.drop(data[data.item != elements['item'][ind]].index)
+        data = dt.drop(dt[dt.item != elements['item'][ind]].index)
 
     data['date'] = pd.to_datetime(data['date'])  # , format='%Y%m%d'
     data['date'] = data['date'].dt.to_period("M")
